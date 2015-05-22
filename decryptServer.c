@@ -258,15 +258,21 @@ for(;;)
   //
   // Attendre la connexion d'un nouveau client TCP.
   //
+    struct sockaddr_in fromAddr;
+    socklen_t len = sizeof(fromAddr);
+    int *dialogSocket = (int *)malloc(sizeof(int));
+    *dialogSocket = accept(listenSocket, (struct sockaddr *)&fromAddr, &len);
+    printf("New connection from %s:%d\n",
+           inet_ntoa(fromAddr.sin_addr), ntohs(fromAddr.sin_port));
     
-
+    
   //---- start a new dialog thread ----
-  //
-  // ... À COMPLÉTER ...
   //
   // Démarrer un thread qui assurera le dialogue avec ce nouveau client dans
   // la fonction ``dialogThread()''.
   //
+    pthread_t th;
+    pthread_create(&th, NULL, dialogThread, dalogSocket);
 
   //---- start counting elapsed time from the first connexion ----
   if(startTime<0.0) startTime=getTime();
@@ -276,11 +282,9 @@ for(;;)
 pthread_mutex_destroy(&mtx);
 free((void *)slices);
 //
-// ... À COMPLÉTER ...
-//
 // fermer la socket d'écoute (jamais atteint ici, pas grave).
 //
-
+ close(listenSocket);
 return 0;
 }
 
