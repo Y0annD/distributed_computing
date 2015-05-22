@@ -240,7 +240,14 @@ if(sscanf(argv[1],"%d",&portNumber)!=1)
 //
  int listenSocket = socket(PF_INET, SOCK_STREAM,0);
 
-
+ struct sockaddr_in myAddr;
+ myAddr.sin_family = AF_INET;
+ myAddr.sin_port = htons(portNumber);
+ myAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+ if(bind(listenSocket,(struct sockaddr *)&myAddr, sizeof(myAddr))==-1){
+   perror("bind");exit(1);
+ }
+ listen(listenSocket,50);
 
 //---- initialise a mutex to protect the shared variables ----
 pthread_mutex_init(&mtx,NULL);
@@ -249,10 +256,9 @@ for(;;)
   {
   //---- accept new connection ----
   //
-  // ... À COMPLÉTER ...
-  //
   // Attendre la connexion d'un nouveau client TCP.
   //
+    
 
   //---- start a new dialog thread ----
   //
