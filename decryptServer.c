@@ -124,7 +124,7 @@ for(;;)
   // cette tranche.
   //
   sprintf(buffer,"%s %lld %lld\n",encrypted,start,end);
-  send(dialogSocket, buffer, strlen(buffer),0);
+  sendResult = send(dialogSocket, buffer, strlen(buffer),0);
   //---- mark this slice as untested in case of send failure ----
   if(sendResult==-1)
     {
@@ -159,11 +159,11 @@ for(;;)
   // au mot de passe découvert ; il suffit alors de l'afficher ainsi que la
   // durée totale de la recherche avant de mettre fin au programme.
   //
-  if(!strcmp(buffer,"FAILURE\n")){
+  if(strstr(buffer,"SUCCESS")!= NULL){
       char mdp[0x100];
-      sscanf(buffer,"SUCCESS %s\n",mdp);
+      sscanf(buffer,"SUCCESS %s",mdp);
       printf("Password: %s found in %g seconds\n",mdp, getTime()-startTime);
-      break;
+      exit(1);
   }
   //---- count tested slices and show stats ----
   pthread_mutex_lock(&mtx);
