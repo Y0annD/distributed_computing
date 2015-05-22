@@ -120,14 +120,13 @@ for(;;)
   (void)end; // avoid ``unused variable'' warning
   (void)buffer; // avoid ``unused variable'' warning
   //
-  // ... À COMPLÉTER ...
-  //
   // Rédiger une ligne de texte
   //   "mot_de_passe_chiffré indice_de_début indice_de_fin\n"
   // dans ``buffer'' et l'envoyer au client afin qu'il réalise le test de
   // cette tranche.
   //
-
+  sprintf("%s %d %d\n",encrypted,start,end);
+  send(dialogSocket, buffer, strlen(buffer),0);
   //---- mark this slice as untested in case of send failure ----
   if(sendResult==-1)
     {
@@ -141,10 +140,9 @@ for(;;)
   //---- receive a reply ----
   int recvResult=-1;
   //
-  // ... À COMPLÉTER ...
-  //
   // Obtenir dans ``buffer'' une ligne de texte depuis le client.
   //
+  recvResult = recv(dialogSocket, buffer, 0x100,0);
 
   //---- mark this slice as untested in case of receive failure ----
   if(recvResult<=0)
@@ -159,13 +157,16 @@ for(;;)
 
   //---- analyse reply for this slice ----
   //
-  // ... À COMPLÉTER ...
-  //
   // Si la réponse commence par "SUCCESS" alors le mot suivant correspond
   // au mot de passe découvert ; il suffit alors de l'afficher ainsi que la
   // durée totale de la recherche avant de mettre fin au programme.
   //
-
+  if(!strcmp(buffer,"FAILURE\n")){
+      char mdp[0x100];
+      sscanf(buffer,"SUCCESS %s\n",mdp);
+      printf("Password: %s found in %g seconds\n",mdp, getTime()-startTime);
+      break;
+  }
   //---- count tested slices and show stats ----
   pthread_mutex_lock(&mtx);
   ++testedCount;
@@ -179,11 +180,9 @@ for(;;)
 //---- close dialog socket ----
 printf("client disconnected\n");
 //
-// ... À COMPLÉTER ...
-//
 // fermer la socket de dialogue
 //
-
+ close(dialogSocket);
 return (void *)0;
 }
 
@@ -237,10 +236,11 @@ if(sscanf(argv[1],"%d",&portNumber)!=1)
 
 //---- create listen socket ----
 //
-// ... À COMPLÉTER ...
-//
 // Créer une socket TCP écoutant sur le port indiqué en ligne de commande.
 //
+ int listenSocket = socket(PF_INET, SOCK_STREAM,0);
+
+
 
 //---- initialise a mutex to protect the shared variables ----
 pthread_mutex_init(&mtx,NULL);
