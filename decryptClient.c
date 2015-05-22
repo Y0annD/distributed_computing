@@ -17,10 +17,11 @@ if(argc!=3)
 
 //---- extract destination IP address ----
 //
-// ... À COMPLÉTER ...
-//
 // Obtenir l'adresse IP de ``argv[1]''
 //
+ struct hostent* dest;
+ dest = gethostbyname(argv[1]);
+ in_addr_t ipAddress = *((in_addr_t *)(dest->h_addr));
 
 //---- extract destination port number ----
 int portNumber;
@@ -29,11 +30,19 @@ if(sscanf(argv[2],"%d",&portNumber)!=1)
 
 //---- create client socket ----
 //
-// ... À COMPLÉTER ...
-//
 // Créer une connexion TCP vers la destination et le port indiqués sur la
 // ligne de commande.
 //
+ int clientSocket=socket(PF_INET, SOCK_STREAM, 0);
+ 
+ struct sockaddr_in toAddr;
+ toAddr.sin_family = AF_INET;
+ toAddr.sin_port = htons(portNumber);
+ toAddr.sin_addr.s_addr=ipAddress;
+ 
+ // connect server
+ connect(clientSocket, (struct sockaddr *)&toAddr, sizeof(toAddr));
+
 
 for(;;)
   {
@@ -43,13 +52,18 @@ for(;;)
   char encrypted[14]="";
   long long start=0,end=0;
   //
-  // ... À COMPLÉTER ...
-  //
   // Obtenir une ligne de texte
   //   "mot_de_passe_chiffré indice_de_début indice_de_fin\n"
   // depuis le serveur.
   // En cas d'erreur de lecture, on met fin au programme.
   //
+  int nb = recv(clientSocket, encrypted, 0x100,0);
+  if(nb>0){
+    encrypted[nb]='\0';
+  }else{
+    printf("Server closed\n");
+    break;
+  }
 
   //---- test the combinations of this slice ----
   sprintf(buffer,"FAILURE\n"); // should be overwritten in case of success
@@ -74,20 +88,17 @@ for(;;)
 
   //---- send reply to server ----
   //
-  // ... À COMPLÉTER ...
-  //
   // Envoyer le message ``buffer'' au serveur.
   // En cas d'erreur d'envoi, on met fin au programme.
   //
-
+  send(clientSocket,buffer, strlen(buffer),0);
   }
 
 //---- close client socket ----
 //
-// ... À COMPLÉTER ...
-//
 // Fermer la connexion.
 //
+ close(clientSocket);
 
 return 0;
 }
