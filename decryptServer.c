@@ -272,7 +272,7 @@ for(;;)
   // la fonction ``dialogThread()''.
   //
     pthread_t th;
-    pthread_create(&th, NULL, dialogThread, dalogSocket);
+    pthread_create(&th, NULL, dialogThread, dialogSocket);
 
   //---- start counting elapsed time from the first connexion ----
   if(startTime<0.0) startTime=getTime();
