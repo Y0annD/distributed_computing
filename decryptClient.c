@@ -65,7 +65,7 @@ for(;;)
     break;
   }
   sscanf(buffer,"%s %lld %lld\n",encrypted, &start, &end);
-  //printf("Encrypted: %s\nStart: %lld\nEnd: %lld\n", encrypted, start, end);
+  printf("#####################\n#    NEW SLICE      #\n#####################\nStart: %lld\nEnd: %lld\n", start, end);
   
   //---- test the combinations of this slice ----
   sprintf(buffer,"FAILURE\n"); // should be overwritten in case of success
