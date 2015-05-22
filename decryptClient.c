@@ -57,14 +57,16 @@ for(;;)
   // depuis le serveur.
   // En cas d'erreur de lecture, on met fin au programme.
   //
-  int nb = recv(clientSocket, encrypted, 0x100,0);
+  int nb = recv(clientSocket, buffer,0x100,0);
   if(nb>0){
-    encrypted[nb]='\0';
+    buffer[nb]='\0';
   }else{
     printf("Server closed\n");
     break;
   }
-
+  sscanf(buffer,"%s %lld %lld\n",encrypted, &start, &end);
+  //printf("Encrypted: %s\nStart: %lld\nEnd: %lld\n", encrypted, start, end);
+  
   //---- test the combinations of this slice ----
   sprintf(buffer,"FAILURE\n"); // should be overwritten in case of success
   for(long long attempt=start;attempt<end;++attempt)
