@@ -81,7 +81,6 @@ pthread_detach(pthread_self()); // no pthread_join() needed
 int dialogSocket=*(int*)arg;
 (void)dialogSocket; // avoid ``unused variable'' warning
 free(arg);
-
 for(;;)
   {
   //---- choose next slice ----
@@ -111,7 +110,6 @@ for(;;)
       break;
       }
     }
-
   //---- send slice to be tested ----
   long long start=slice*sliceSize;
   long long end=start+sliceSize<=combinations ? start+sliceSize : combinations;
@@ -125,7 +123,7 @@ for(;;)
   // dans ``buffer'' et l'envoyer au client afin qu'il réalise le test de
   // cette tranche.
   //
-  sprintf("%s %d %d\n",encrypted,start,end);
+  sprintf(buffer,"%s %lld %lld\n",encrypted,start,end);
   send(dialogSocket, buffer, strlen(buffer),0);
   //---- mark this slice as untested in case of send failure ----
   if(sendResult==-1)
